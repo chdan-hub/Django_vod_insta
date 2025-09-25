@@ -7,6 +7,6 @@ from post.models import Post
 class PostListView(ListView):
     queryset = Post.objects.all().select_related('user').prefetch_related('images')
     template_name = 'post/list.html'
-    paginate_by = 20
+    paginate_by = 5
     ordering = ('-created_at', )
 
