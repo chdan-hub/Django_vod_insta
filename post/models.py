@@ -1,5 +1,9 @@
+import re
+
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from utils.models import TimeStampedModel
 
@@ -42,6 +46,8 @@ class Tag(TimeStampedModel):
     def __str__(self):
         return self.tag
 
+
+
 # 댓글
 class Comment(TimeStampedModel):
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
@@ -51,3 +57,18 @@ class Comment(TimeStampedModel):
     def __str__(self):
         return f'{self.post} | {self.user}'
 
+
+@receiver(post_save, sender=Post)
+def post_post_save(sender, instance, created, **kwargs):
+    hashtags = re.findall(r'#(\w{1,100})(?=\s|$)', instance.content)
+
+    if hashtags:
+        tags = [
+            Tag.objects.get_or_create(tag=hashtag)
+            for hashtag in hashtags
+        ]
+
+        tags = [tag for tag, _ in tags]
+
+        instance.tags.clear()
+        instance.tags.add(*tags)
