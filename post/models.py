@@ -35,5 +35,19 @@ class PostImage(TimeStampedModel):
 # 수정일자
 
 # 태그
+class Tag(TimeStampedModel):
+    tag = models.CharField('태그' ,max_length=100)
+    posts = models.ManyToManyField(Post, related_name='tags')
+
+    def __str__(self):
+        return self.tag
+
 # 댓글
+class Comment(TimeStampedModel):
+    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
+    content = models.CharField('내용', max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.post} | {self.user}'
 
