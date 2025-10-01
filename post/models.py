@@ -62,6 +62,8 @@ class Comment(TimeStampedModel):
 def post_post_save(sender, instance, created, **kwargs):
     hashtags = re.findall(r'#(\w{1,100})(?=\s|$)', instance.content)
 
+    instance.tags.clear()
+
     if hashtags:
         tags = [
             Tag.objects.get_or_create(tag=hashtag)
@@ -70,5 +72,4 @@ def post_post_save(sender, instance, created, **kwargs):
 
         tags = [tag for tag, _ in tags]
 
-        instance.tags.clear()
         instance.tags.add(*tags)
