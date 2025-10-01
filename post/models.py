@@ -55,7 +55,14 @@ class Comment(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.post} | {self.user}'
+        return f'[comment] {self.post} | {self.user}'
+
+class Like(TimeStampedModel):
+    post = models.ForeignKey(Post, related_name='likes', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'[like] {self.post} | {self.user}'
 
 
 @receiver(post_save, sender=Post)
